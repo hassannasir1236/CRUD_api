@@ -18,25 +18,55 @@ class StudentController extends ResourceController
      // create
      public function create() {
         helper('date');
-        $model = new Student();
-        $data = [
-            'username' => $this->request->getVar('username'),
-            'email'  => $this->request->getVar('email'),
-            'password' => $this->request->getVar('password'),
-            'created_at'  => Time::now(),
-            'updated_at' => Time::now(),
-        ];
-        $model->insert($data);
-        $response = [
-          'status'   => 201,
-          'error'    => null,
-          'data' => $data,
-          'messages' => [
-              'success' => 'Student created successfully'
-          ]
-      ];
-      return $this->respondCreated($response);
-    }
+        $rules = [
+			"username" => "required",
+			"email" => "required|valid_email|is_unique[students.email]",
+			"password" => "required",
+		];
+		$messages = [
+			"username" => [
+				"required" => "Username Field is required"
+			],
+			"email" => [
+				"required" => "Email Field required",
+				"valid_email" => "Email address is not in format",
+				"is_unique" => "Email address already exists"
+			],
+			"password" => [
+				"required" => "password Field is required"
+			],
+		];
+        if (!$this->validate($rules, $messages)) {
+
+			$response = [
+				'status' => 500,
+				'error' => true,
+				'message' => $this->validator->getErrors(),
+				'data' => []
+			];
+		} else {
+                    $model = new Student();
+                    $data = [
+                        'username' => $this->request->getVar('username'),
+                        'email'  => $this->request->getVar('email'),
+                        'password' => md5($this->request->getVar('password')),
+                        'created_at'  => Time::now(),
+                        'updated_at' => Time::now(),
+                    ];
+                    $model->insert($data);
+                    $response = [
+                    'status'   => 201,
+                    'error'    => null,
+                    'data' => $data,
+                    'messages' => [
+                        'success' => 'Student created successfully'
+                    ]
+                ];
+  
+             }
+             return $this->respondCreated($response);
+            }
+
     public function show($id = null){
         $model = new Student();
         $data = $model->where('id', $id)->first();
@@ -48,11 +78,39 @@ class StudentController extends ResourceController
     }
     // update
     public function update($id = null){
+        helper('date');
+        $rules = [
+			"username" => "required",
+			"email" => "required|valid_email|is_unique[students.email]",
+			"password" => "required",
+		];
+		$messages = [
+			"username" => [
+				"required" => "Username Field is required"
+			],
+			"email" => [
+				"required" => "Email Field required",
+				"valid_email" => "Email address is not in format",
+				"is_unique" => "Email address already exists"
+			],
+			"password" => [
+				"required" => "password Field is required"
+			],
+		];
+        if (!$this->validate($rules, $messages)) {
+
+			$response = [
+				'status' => 500,
+				'error' => true,
+				'message' => $this->validator->getErrors(),
+				'data' => []
+			];
+		} else {
         $model = new Student();
         $data = [
             'username' => $this->request->getVar('username'),
             'email'  => $this->request->getVar('email'),
-            'password'  => $this->request->getVar('password'),
+            'password'  => md5($this->request->getVar('password')),
             'created_at'  => Time::now(),
             'updated_at' => Time::now(),
         ];
@@ -66,6 +124,7 @@ class StudentController extends ResourceController
               'success' => 'Employee updated successfully'
           ]
       ];
+    }
       return $this->respond($response);
     }
     // delete
