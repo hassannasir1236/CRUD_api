@@ -39,7 +39,7 @@ class StudentController extends ResourceController
         if (!$this->validate($rules, $messages)) {
 
 			$response = [
-				'status' => 500,
+				'status' => 400,
 				'error' => true,
 				'message' => $this->validator->getErrors(),
 				'data' => []
@@ -81,7 +81,7 @@ class StudentController extends ResourceController
         helper('date');
         $rules = [
 			"username" => "required",
-			"email" => "required|valid_email|is_unique[students.email]",
+			"email" => "required|valid_email",
 			"password" => "required",
 		];
 		$messages = [
@@ -91,7 +91,6 @@ class StudentController extends ResourceController
 			"email" => [
 				"required" => "Email Field required",
 				"valid_email" => "Email address is not in format",
-				"is_unique" => "Email address already exists"
 			],
 			"password" => [
 				"required" => "password Field is required"
@@ -100,7 +99,7 @@ class StudentController extends ResourceController
         if (!$this->validate($rules, $messages)) {
 
 			$response = [
-				'status' => 500,
+				'status' => 400,
 				'error' => true,
 				'message' => $this->validator->getErrors(),
 				'data' => []
